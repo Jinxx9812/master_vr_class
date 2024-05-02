@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,14 +15,22 @@ public class GameManager : Singleton<GameManager>
     Vector3 spawnAreaSize;
 
     [Header("Product references")]
-    [SerializeField] int numberOfProducts = 1;
+    [SerializeField] int numberOfItems = 4;
 
     [Header("Main menu")]
     [SerializeField] public GameObject mainMenuCanvas;
     [SerializeField] public Button startBtn;
 
     [Header("Gameplay")]
-    [SerializeField] float _duration = 5.0f;
+    [SerializeField] public GameObject gameplayCanvas;
+    [SerializeField] public TMP_Text timeTxt;
+    [SerializeField] public float _duration = 10.0f;
+    [SerializeField] public GameObject blueBox;
+    [SerializeField] public GameObject redBox;
+
+    [Header("Endgame")]
+    [SerializeField] public GameObject scoreCanvas;
+    [SerializeField] public Button saveBtn;
 
     public StateMachine stateMachine;
 
@@ -32,7 +41,12 @@ public class GameManager : Singleton<GameManager>
         stateMachine.Initialize(stateMachine.mainMenuState);
     }
 
-    public void Gameplay()
+    private void Update()
+    {
+        stateMachine.Update();
+    }
+
+    public void GenerateInteractables()
     {
         // spawn area
         spawnAreaCenter = spawnArea.transform.position;
@@ -43,34 +57,22 @@ public class GameManager : Singleton<GameManager>
         FactoryProductRed factoryProductRed = this.GetComponent<FactoryProductRed>();
 
         // create n products
-        for (int i = 0; i < numberOfProducts; i++)
+        for (int i = 0; i < numberOfItems; i++)
         {
             Vector3 randomPos = GetRandomPointInArea();
-            // verify if pos is occupied
+
+            IProduct item;
+
             int randomFactory = Random.Range(1, 3);
             if (randomFactory == 1)
             {
-                IProduct item = factoryProductBlue.GetProduct(randomPos);
+                item = factoryProductBlue.GetProduct(randomPos);
             }
             else
             {
-                IProduct item = factoryProductRed.GetProduct(randomPos);
+                item = factoryProductRed.GetProduct(randomPos);
             }
         }
-
-        StartCoroutine("GameplayTime");
-    }
-
-    IEnumerator GameplayTime()
-    {
-        while(_duration > 0)
-        {
-            _duration -= Time.deltaTime;
-            Debug.Log("Tiempo limite: " +  _duration.ToString("F1"));
-            yield return null;
-        }
-        yield return new WaitForSeconds(1);
-        stateMachine.TransitionTo(stateMachine.showScoreState);
     }
 
     private Vector3 GetRandomPointInArea()
@@ -79,5 +81,34 @@ public class GameManager : Singleton<GameManager>
         float y = UnityEngine.Random.Range(spawnAreaCenter.y - spawnAreaSize.y / 2, spawnAreaCenter.y + spawnAreaSize.y / 2);
         float z = UnityEngine.Random.Range(spawnAreaCenter.z - spawnAreaSize.z / 2, spawnAreaCenter.z + spawnAreaSize.z / 2);
         return new Vector3(x, y, z);
+    }
+
+    public void ClearIProductsOnScene()
+    {
+        // Encuentra todos los GameObjects en la escena con el componente "ProductBlue"
+        ProductBlue[] productsBlue = FindObjectsOfType<ProductBlue>();
+
+        // Itera sobre cada GameObject encontrado
+        foreach (ProductBlue product in productsBlue)
+        {
+            // Haz algo con cada GameObject encontrado
+            Destroy(product.gameObject);
+        }
+
+        // Encuentra todos los GameObjects en la escena con el componente "ProductRed"
+        ProductRed[] productsRed = FindObjectsOfType<ProductRed>();
+
+        // Itera sobre cada GameObject encontrado
+        foreach (ProductRed product in productsRed)
+        {
+            // Haz algo con cada GameObject encontrado
+            Destroy(product.gameObject);
+        }
+
+        // Reinicio las variables de cada caja
+        BoxCounter boxCounterBlue = blueBox.GetComponentInChildren<BoxCounter>();
+        boxCounterBlue.RestartScore();
+        BoxCounter boxCounterRed = redBox.GetComponentInChildren<BoxCounter>();
+        boxCounterRed.RestartScore();
     }
 }

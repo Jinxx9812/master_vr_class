@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ShowScoreState : IState
 {
@@ -9,20 +10,27 @@ public class ShowScoreState : IState
     public ShowScoreState(GameManager gameManager)
     {
         this.gameManager = gameManager;
+        gameManager.saveBtn.onClick.AddListener(RestartGame);
     }
 
     public void Enter()
     {
-        Debug.Log("Show score state - enter");
+        gameManager.scoreCanvas.SetActive(true);
     }
 
     public void Update()
     {
-        Debug.Log("Show score state - update");
+
+    }
+
+    private void RestartGame()
+    {
+        gameManager.stateMachine.TransitionTo(gameManager.stateMachine.mainMenuState);
     }
 
     public void Exit()
     {
-        Debug.Log("Show score state - exit");
+        gameManager.ClearIProductsOnScene();
+        gameManager.scoreCanvas.SetActive(false);
     }
 }

@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,24 +10,28 @@ public class MainMenuState : IState
     public MainMenuState(GameManager gameManager) 
     {
         this.gameManager = gameManager;
+        gameManager.startBtn.onClick.AddListener(BeginGame);
     }
 
     public void Enter()
     {
-        Debug.Log("Estado main menu - enter");
-        gameManager.startBtn.onClick.AddListener(Update);
+        gameManager.gameplayCanvas.SetActive(false);
+        gameManager.scoreCanvas.SetActive(false);
         gameManager.mainMenuCanvas.SetActive(true);
     }
 
     public void Update()
     {
-        Debug.Log("Estado main menu - update");
+
+    }
+
+    private void BeginGame()
+    {
         gameManager.stateMachine.TransitionTo(gameManager.stateMachine.gameplayState);
     }
 
     public void Exit()
     {
-        Debug.Log("Estado main menu - exit");
         gameManager.mainMenuCanvas.SetActive(false);
     }
 }

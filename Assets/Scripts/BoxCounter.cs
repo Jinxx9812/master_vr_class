@@ -42,4 +42,11 @@ public class BoxCounter : Box
     {
         return totalItems;
     }
+
+    public void RestartScore()
+    {
+        score = 0;
+        totalItems = 0;
+        CounterChange?.Invoke();
+    }
 }

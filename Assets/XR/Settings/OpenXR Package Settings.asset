@@ -34,7 +34,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a24be4b5ebfe5f4d8ed1de9b25cb7aa, type: 3}
   m_Name: HandCommonPosesInteraction Android
   m_EditorClassIdentifier: 
-  m_enabled: 1
+  m_enabled: 0
   nameUi: Hand Interaction Poses
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.handinteractionposes
@@ -180,7 +180,7 @@ MonoBehaviour:
   - {fileID: -8588221046177647890}
   - {fileID: -2358846444955895085}
   - {fileID: -6379177156671567758}
-  m_renderMode: 1
+  m_renderMode: 0
   m_depthSubmissionMode: 0
   m_symmetricProjection: 0
 --- !u!114 &-7534672577571154313
