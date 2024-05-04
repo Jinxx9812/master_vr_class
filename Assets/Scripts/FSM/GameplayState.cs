@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameplayState : IState
 {
     private GameManager gameManager;
-    private float elapsedTime;
+    public float elapsedTime = 0f;  // Tiempo transcurrido en el estado
 
     public GameplayState(GameManager gameManager)
     {
@@ -21,21 +19,11 @@ public class GameplayState : IState
 
     public void Update()
     {
-        // Incrementar el tiempo transcurrido con el tiempo de cada frame
-        elapsedTime += Time.deltaTime;
+        elapsedTime += Time.deltaTime;  // Actualizar el tiempo transcurrido
+        gameManager.timeTxt.text = "Tiempo: " + elapsedTime.ToString("F2");  // Mostrar el tiempo en el UI
 
-        // Convertir el tiempo transcurrido a formato de minutos y segundos
-        int minutes = Mathf.FloorToInt(elapsedTime / 60f);
-        int seconds = Mathf.FloorToInt(elapsedTime % 60f);
-
-        // Actualizar el texto para mostrar el tiempo transcurrido
-        gameManager.timeTxt.text = "Tiempo: " + string.Format("{0:00}:{1:00}", minutes, seconds);
-        
-        // Condicion de salida
-        if(elapsedTime > gameManager._duration)
-        {
-            gameManager.stateMachine.TransitionTo(gameManager.stateMachine.showScoreState);
-        }
+        // Aquí agregamos un chequeo manual para la condición de completitud
+        gameManager.CheckAllItemsPlacedCorrectly();
     }
 
     public void Exit()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -177,7 +178,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void CheckAllItemsPlacedCorrectly()
+    public void CheckAllItemsPlacedCorrectly()
     {
         foreach (var color in itemsSpawned.Keys)
         {
@@ -185,35 +186,36 @@ public class GameManager : Singleton<GameManager>
                 return; // Si algún color no cumple con la condición, sale de la función.
         }
         // Si todos los objetos están correctamente colocados
-        ShowFinalScore();
+        stateMachine.TransitionTo(stateMachine.showScoreState);
+        ShowFinalScore();  // Llamar a mostrar el puntaje final
     }
+
 
 
 
 
     private void ShowFinalScore()
     {
-        reportCanvas.SetActive(true);  // Activa el canvas de reporte
+        Debug.Log("Showing final score. Activating report canvas.");
+        reportCanvas.SetActive(true);
 
-        TMP_Text reportText = reportCanvas.GetComponentInChildren<TMP_Text>();  // Obtiene el componente de texto
-
+        TMP_Text reportText = reportCanvas.GetComponentInChildren<TMP_Text>();
         if (reportText != null)
         {
-            // Calcular el total de piezas generadas
-            int totalPieces = 0;
-            foreach (var pair in itemsSpawned)
-            {
-                totalPieces += pair.Value;
-            }
+            Debug.Log("Report text component found.");
+            int totalPieces = itemsSpawned.Values.Sum();  // Usar LINQ para sumar puede simplificar el código
+            string timeElapsed = timeTxt.text.Replace("Tiempo: ", "");
+            reportText.text = $"Todos los objetos están correctamente colocados en sus respectivas cajas.\nNúmero de piezas totales: {totalPieces}\nTiempo de la prueba: {timeElapsed} Segundos";
 
-            // El tiempo transcurrido ya está formateado y guardado en timeTxt
-            string timeElapsed = timeTxt.text.Replace("Tiempo: ", ""); // Elimina el prefijo si es necesario
-
-            // Construye el mensaje completo con salto de línea
-            reportText.text = "Todos los objetos están correctamente colocados en sus respectivas cajas.\n" +
-                              "Número de piezas totales: " + totalPieces + "\n tiempo de la prueba: \n " + timeElapsed + "Segundos";
+            Debug.Log("Report text set: " + reportText.text);
+        }
+        else
+        {
+            Debug.Log("Report text component NOT found.");
         }
     }
+
+
 
 
 
