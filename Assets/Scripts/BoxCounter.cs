@@ -11,11 +11,13 @@ public class BoxCounter : Box
     private int totalItems = 0;
     public event Action CounterChange;
 
+
     private void OnTriggerEnter(Collider other)
     {
         ItemColor itemColor = other.GetComponent<ItemColor>();
-        if(itemColor.color == ColorBox)
+        if (itemColor.color == ColorBox)
         {
+            GameManager.Instance.ItemPlacedCorrectly(itemColor.color);
             score++;
         }
         totalItems++;
@@ -27,11 +29,13 @@ public class BoxCounter : Box
         ItemColor itemColor = other.GetComponent<ItemColor>();
         if (itemColor.color == ColorBox)
         {
+            GameManager.Instance.ItemRemovedCorrectly(itemColor.color);
             score--;
         }
         totalItems--;
         CounterChange?.Invoke();
     }
+
 
     public override int GetScore()
     {

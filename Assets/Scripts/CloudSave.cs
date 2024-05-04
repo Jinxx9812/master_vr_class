@@ -15,11 +15,15 @@ public class CloudSave : Singleton<CloudSave>
 {
     [SerializeField] GameObject blueBox;
     [SerializeField] GameObject redBox;
+    [SerializeField] GameObject orangeBox;
+    [SerializeField] GameObject whiteBox;
 
     struct dataToSave
     {
         public int scoreBlue;
         public int scoreRed;
+        public int scoreOrange;
+        public int scoreWhite;
     }
 
     async void Start()
@@ -72,10 +76,14 @@ public class CloudSave : Singleton<CloudSave>
         Debug.Log("Voy a guardar");
         BoxCounter counterBlue = blueBox.GetComponentInChildren<BoxCounter>();
         BoxCounter counterRed = redBox.GetComponentInChildren<BoxCounter>();
+        BoxCounter counterWhite = whiteBox.GetComponentInChildren<BoxCounter>();
+        BoxCounter counterOrange = orangeBox.GetComponentInChildren<BoxCounter>();
 
         dataToSave performance = new();
         performance.scoreBlue = counterBlue.GetScore();
         performance.scoreRed = counterRed.GetScore();
+        performance.scoreWhite = counterWhite.GetScore();
+        performance.scoreOrange = counterOrange.GetScore();
 
         var data = new Dictionary<string, object> { { "Perfomance", performance } };
         await CloudSaveService.Instance.Data.Player.SaveAsync(data);

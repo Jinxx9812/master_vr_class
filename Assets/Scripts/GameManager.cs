@@ -27,12 +27,31 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public float _duration = 10.0f;
     [SerializeField] public GameObject blueBox;
     [SerializeField] public GameObject redBox;
+    [SerializeField] public GameObject orangeBox;
+    [SerializeField] public GameObject whiteBox;
 
     [Header("Endgame")]
     [SerializeField] public GameObject scoreCanvas;
     [SerializeField] public Button saveBtn;
+    [SerializeField] private GameObject reportCanvas;
 
     public StateMachine stateMachine;
+
+    private Dictionary<string, int> itemsSpawned = new Dictionary<string, int>()
+    {
+        {"Blue", 0},
+        {"Red", 0},
+        {"White", 0},
+        {"Orange", 0}
+    };
+
+    private Dictionary<string, int> itemsCorrectlyPlaced = new Dictionary<string, int>()
+    {
+        {"Blue", 0},
+        {"Red", 0},
+        {"White", 0},
+        {"Orange", 0}
+    };
 
     // Start is called before the first frame update
     void Start()
@@ -55,22 +74,33 @@ public class GameManager : Singleton<GameManager>
         // blue product factory
         FactoryProductBlue factoryProductBlue = this.GetComponent<FactoryProductBlue>();
         FactoryProductRed factoryProductRed = this.GetComponent<FactoryProductRed>();
+        FactoryProductWhite factoryProductWhite = this.GetComponent<FactoryProductWhite>();
+        FactoryProductOrange factoryProductOrange = this.GetComponent<FactoryProductOrange>();
+
 
         // create n products
         for (int i = 0; i < numberOfItems; i++)
         {
             Vector3 randomPos = GetRandomPointInArea();
-
-            IProduct item;
-
-            int randomFactory = Random.Range(1, 3);
-            if (randomFactory == 1)
+            int randomFactory = Random.Range(1, 5);
+            switch (randomFactory)
             {
-                item = factoryProductBlue.GetProduct(randomPos);
-            }
-            else
-            {
-                item = factoryProductRed.GetProduct(randomPos);
+                case 1:
+                    this.GetComponent<FactoryProductBlue>().GetProduct(randomPos);
+                    itemsSpawned["Blue"]++;
+                    break;
+                case 2:
+                    this.GetComponent<FactoryProductRed>().GetProduct(randomPos);
+                    itemsSpawned["Red"]++;
+                    break;
+                case 3:
+                    this.GetComponent<FactoryProductOrange>().GetProduct(randomPos);
+                    itemsSpawned["Orange"]++;
+                    break;
+                case 4:
+                    this.GetComponent<FactoryProductWhite>().GetProduct(randomPos);
+                    itemsSpawned["White"]++;
+                    break;
             }
         }
     }
@@ -105,10 +135,88 @@ public class GameManager : Singleton<GameManager>
             Destroy(product.gameObject);
         }
 
+        ProductWhite[] productsWhite = FindObjectsOfType<ProductWhite>();
+        foreach (ProductWhite product in productsWhite)
+        {
+            // Haz algo con cada GameObject encontrado
+            Destroy(product.gameObject);
+        }
+
+        ProductOrange[] productsOrange = FindObjectsOfType<ProductOrange>();
+        foreach (ProductOrange product in productsOrange)
+        {
+            // Haz algo con cada GameObject encontrado
+            Destroy(product.gameObject);
+        }
+
         // Reinicio las variables de cada caja
         BoxCounter boxCounterBlue = blueBox.GetComponentInChildren<BoxCounter>();
         boxCounterBlue.RestartScore();
         BoxCounter boxCounterRed = redBox.GetComponentInChildren<BoxCounter>();
         boxCounterRed.RestartScore();
+        BoxCounter boxCounterOrange = orangeBox.GetComponentInChildren<BoxCounter>();
+        boxCounterRed.RestartScore();
+        BoxCounter boxCounterWhite = whiteBox.GetComponentInChildren<BoxCounter>();
+        boxCounterRed.RestartScore();
     }
+
+    public void ItemPlacedCorrectly(string color)
+    {
+        if (itemsSpawned[color] > itemsCorrectlyPlaced[color])
+        {
+            itemsCorrectlyPlaced[color]++;
+        }
+        CheckAllItemsPlacedCorrectly();
+    }
+
+    public void ItemRemovedCorrectly(string color)
+    {
+        if (itemsCorrectlyPlaced[color] > 0)
+        {
+            itemsCorrectlyPlaced[color]--;
+        }
+    }
+
+    private void CheckAllItemsPlacedCorrectly()
+    {
+        foreach (var color in itemsSpawned.Keys)
+        {
+            if (itemsSpawned[color] != itemsCorrectlyPlaced[color])
+                return; // Si algún color no cumple con la condición, sale de la función.
+        }
+        // Si todos los objetos están correctamente colocados
+        ShowFinalScore();
+    }
+
+
+
+
+    private void ShowFinalScore()
+    {
+        reportCanvas.SetActive(true);  // Activa el canvas de reporte
+
+        TMP_Text reportText = reportCanvas.GetComponentInChildren<TMP_Text>();  // Obtiene el componente de texto
+
+        if (reportText != null)
+        {
+            // Calcular el total de piezas generadas
+            int totalPieces = 0;
+            foreach (var pair in itemsSpawned)
+            {
+                totalPieces += pair.Value;
+            }
+
+            // El tiempo transcurrido ya está formateado y guardado en timeTxt
+            string timeElapsed = timeTxt.text.Replace("Tiempo: ", ""); // Elimina el prefijo si es necesario
+
+            // Construye el mensaje completo con salto de línea
+            reportText.text = "Todos los objetos están correctamente colocados en sus respectivas cajas.\n" +
+                              "Número de piezas totales: " + totalPieces + "\n tiempo de la prueba: \n " + timeElapsed + "Segundos";
+        }
+    }
+
+
+
+
+
 }
