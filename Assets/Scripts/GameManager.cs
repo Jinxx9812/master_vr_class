@@ -36,6 +36,11 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public Button saveBtn;
     [SerializeField] private GameObject reportCanvas;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;  // Referencia al AudioSource
+    [SerializeField] private AudioClip correctPlacementSound;  // Clip de sonido para cuando un objeto se coloca correctamente
+
+
     public StateMachine stateMachine;
 
     private Dictionary<string, int> itemsSpawned = new Dictionary<string, int>()
@@ -166,8 +171,21 @@ public class GameManager : Singleton<GameManager>
         if (itemsSpawned[color] > itemsCorrectlyPlaced[color])
         {
             itemsCorrectlyPlaced[color]++;
+            PlayCorrectPlacementSound();  // Reproducir el sonido
         }
         CheckAllItemsPlacedCorrectly();
+    }
+
+    private void PlayCorrectPlacementSound()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Play();  // Solo llama a Play ya que el AudioSource ya tiene el clip asignado
+        }
+        else
+        {
+            Debug.LogError("AudioSource is missing from GameManager!");
+        }
     }
 
     public void ItemRemovedCorrectly(string color)
