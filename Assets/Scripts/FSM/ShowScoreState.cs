@@ -15,12 +15,13 @@ public class ShowScoreState : IState
 
     public void Enter()
     {
+        
         gameManager.scoreCanvas.SetActive(true);
     }
 
     public void Update()
     {
-
+        gameManager.ClearIProductsOnScene();
     }
 
     private void RestartGame()
@@ -30,7 +31,7 @@ public class ShowScoreState : IState
 
     public void Exit()
     {
-        gameManager.ClearIProductsOnScene();
+        
         gameManager.scoreCanvas.SetActive(false);
     }
 }

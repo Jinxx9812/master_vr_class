@@ -161,9 +161,9 @@ public class GameManager : Singleton<GameManager>
         BoxCounter boxCounterRed = redBox.GetComponentInChildren<BoxCounter>();
         boxCounterRed.RestartScore();
         BoxCounter boxCounterOrange = orangeBox.GetComponentInChildren<BoxCounter>();
-        boxCounterRed.RestartScore();
+        boxCounterOrange.RestartScore();
         BoxCounter boxCounterWhite = whiteBox.GetComponentInChildren<BoxCounter>();
-        boxCounterRed.RestartScore();
+        boxCounterWhite.RestartScore();
     }
 
     public void ItemPlacedCorrectly(string color)
